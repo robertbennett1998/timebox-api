@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Timebox.Application\Timebox.Application.csproj" />
+    <ProjectReference Include="..\Timebox.Application.Interfaces\Timebox.Application.Interfaces.csproj" />
+    <ProjectReference Include="..\Timebox.Infrastructure\Timebox.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+</Project>
