@@ -11,6 +11,7 @@ using Timebox.Schedule.Api.Controllers;
 using Timebox.Schedule.Api.DTOs;
 using Timebox.Schedule.Application.Exceptions;
 using Timebox.Schedule.Application.Interfaces.Services;
+using Timebox.Schedule.Domain.Entities;
 
 namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
 {
@@ -32,44 +33,57 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         public async Task ScheduleTask_NewTimebox_Success_ReturnsOk()
         {
             // Arrange
-            const string scheduleId = "schedule-id";
+            Guid scheduleId = Guid.NewGuid();
             Guid timeboxId = Guid.NewGuid();
-            const string taskId = "task-id";
+            Guid taskId = Guid.NewGuid();
             const int durationInMinutes = 15;
             DateTime scheduledDateTime = DateTime.Now;
             ScheduleTaskDto scheduleTaskDto = new ScheduleTaskDto
             {
-                TaskId = taskId,
+                TaskId = taskId.ToString(),
                 DurationInMinutes = durationInMinutes,
                 ScheduledDateTime = scheduledDateTime
             };
 
             _mocker.GetMock<ISchedulerService>().Setup(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                     It.Is<int>(y => y == durationInMinutes),
                     It.Is<DateTime>(y => y == scheduledDateTime)))
-                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, durationInMinutes));
+                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, scheduleId, durationInMinutes, scheduledDateTime));
             
             _mocker.GetMock<ISchedulerService>().Setup(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
-                It.Is<string>(y => y == taskId)));
+                It.Is<string>(y => y == taskId.ToString()))).ReturnsAsync(new Domain.Entities.Timebox(timeboxId, scheduleId, durationInMinutes, scheduledDateTime, new TaskBase(taskId, "task-name")));
 
             // Act
-            var result = await _sut.ScheduleTask(scheduleId, scheduleTaskDto);
+            var result = await _sut.ScheduleTask(scheduleId.ToString(), scheduleTaskDto);
 
             // Assert
-            result.ShouldBeOfType<OkResult>();
+            result.ShouldBeAssignableTo<OkObjectResult>();
+            (result as OkObjectResult)?.Value.ShouldBeEquivalentTo(new TaskScheduledDto
+            {
+                ScheduleId = scheduleId.ToString(),
+                TimeboxId = timeboxId.ToString(),
+                Timebox = new TimeboxDto
+                {
+                    TimeboxId = timeboxId.ToString(),
+                    TaskId = taskId.ToString(),
+                    DurationInMinutes = durationInMinutes,
+                    FromDateTime = scheduledDateTime
+                },
+                TaskId = taskId.ToString()
+            });
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<int>(y => y == durationInMinutes),
                 It.Is<DateTime>(y => y == scheduledDateTime)), Times.Once);
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
-                It.Is<string>(y => y == taskId)), Times.Once);
+                It.Is<string>(y => y == taskId.ToString())), Times.Once);
         }
         
         [Test]
@@ -77,7 +91,6 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         {
             // Arrange
             const string scheduleId = "schedule-id";
-            Guid timeboxId = Guid.NewGuid();
             const string taskId = "task-id";
             const int durationInMinutes = 15;
             DateTime scheduledDateTime = DateTime.Now;
@@ -117,7 +130,7 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         public async Task ScheduleTask_NewTimebox_NotFound_ReturnsNotFound()
         {
             // Arrange
-            const string scheduleId = "schedule-id";
+            Guid scheduleId = Guid.NewGuid();
             Guid timeboxId = Guid.NewGuid();
             const string taskId = "task-id";
             const int durationInMinutes = 15;
@@ -130,32 +143,32 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
             };
             
             _mocker.GetMock<ISchedulerService>().Setup(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                     It.Is<int>(y => y == durationInMinutes),
                     It.Is<DateTime>(y => y == scheduledDateTime)))
-                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, durationInMinutes));
+                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, scheduleId, durationInMinutes, scheduledDateTime));
 
             var resourceName = "resource-name";
             var resourceIdentifier = "resource-identifier";
            _mocker.GetMock<ISchedulerService>().Setup(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
                 It.Is<string>(y => y == taskId))).ThrowsAsync(new NotFoundException(resourceName, resourceIdentifier));
 
             // Act
-            var result = await _sut.ScheduleTask(scheduleId, scheduleTaskDto);
+            var result = await _sut.ScheduleTask(scheduleId.ToString(), scheduleTaskDto);
 
             // Assert
             result.ShouldBeAssignableTo<NotFoundObjectResult>();
             (result as NotFoundObjectResult)?.Value.ShouldBeEquivalentTo(new [] {resourceName, resourceIdentifier});
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<int>(y => y == durationInMinutes),
                 It.Is<DateTime>(y => y == scheduledDateTime)), Times.Once);
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
                 It.Is<string>(y => y == taskId)), Times.Once);
         }
@@ -164,7 +177,7 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         public async Task ScheduleTask_NewTimebox_InvalidGuid_ReturnsBadRequest()
         {
             // Arrange
-            const string scheduleId = "schedule-id";
+            Guid scheduleId = Guid.NewGuid();
             Guid timeboxId = Guid.NewGuid();
             const string taskId = "task-id";
             const int durationInMinutes = 15;
@@ -177,10 +190,10 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
             };
             
             _mocker.GetMock<ISchedulerService>().Setup(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                     It.Is<int>(y => y == durationInMinutes),
                     It.Is<DateTime>(y => y == scheduledDateTime)))
-                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, durationInMinutes));
+                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, scheduleId, durationInMinutes, scheduledDateTime));
             
             var exceptionValue = new Dictionary<string, string>
             {
@@ -188,24 +201,24 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
             };
             
             _mocker.GetMock<ISchedulerService>().Setup(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
                 It.Is<string>(y => y == taskId))).ThrowsAsync(new InvalidParametersException(exceptionValue));
 
             // Act
-            var result = await _sut.ScheduleTask(scheduleId, scheduleTaskDto);
+            var result = await _sut.ScheduleTask(scheduleId.ToString(), scheduleTaskDto);
 
             // Assert
             result.ShouldBeOfType<BadRequestObjectResult>();
             (result as BadRequestObjectResult)?.Value.ShouldBe(exceptionValue);
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<int>(y => y == durationInMinutes),
                 It.Is<DateTime>(y => y == scheduledDateTime)), Times.Once);
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
                 It.Is<string>(y => y == taskId)), Times.Once);
         }
@@ -254,7 +267,7 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         public async Task ScheduleTask_NewTimebox_UnknownExceptionScheduleTask_ReturnsInternalServerError()
         {
             // Arrange
-            const string scheduleId = "schedule-id";
+            Guid scheduleId = Guid.NewGuid();
             Guid timeboxId = Guid.NewGuid();
             const string taskId = "task-id";
             const int durationInMinutes = 15;
@@ -267,30 +280,30 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
             };
 
             _mocker.GetMock<ISchedulerService>().Setup(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                     It.Is<int>(y => y == durationInMinutes),
                     It.Is<DateTime>(y => y == scheduledDateTime)))
-                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, durationInMinutes));
+                .ReturnsAsync(new Domain.Entities.Timebox(timeboxId, scheduleId, durationInMinutes, scheduledDateTime));
             
             _mocker.GetMock<ISchedulerService>().Setup(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
                 It.Is<string>(y => y == taskId))).ThrowsAsync(new Exception());
 
             // Act
-            var result = await _sut.ScheduleTask(scheduleId, scheduleTaskDto);
+            var result = await _sut.ScheduleTask(scheduleId.ToString(), scheduleTaskDto);
 
             // Assert
             result.ShouldBeAssignableTo<StatusCodeResult>();
             (result as StatusCodeResult)?.StatusCode.ShouldBe((int)HttpStatusCode.InternalServerError);
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.AllocateTimebox(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<int>(y => y == durationInMinutes),
                 It.Is<DateTime>(y => y == scheduledDateTime)), Times.Once);
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
                 It.Is<string>(y => y == taskId)), Times.Once);
         }
@@ -301,20 +314,35 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         public async Task ScheduleTask_ExistingTimebox_Success_ReturnsOk()
         {
             // Arrange
-            const string scheduleId = "schedule-id";
-            const string timeboxId = "timebox-id";
-            const string taskId = "task-id";
+            Guid scheduleId = Guid.NewGuid();
+            Guid timeboxId = Guid.NewGuid();
+            Guid taskId = Guid.NewGuid();
+            const int durationInMinutes = 15;
+            DateTime scheduledDateTime = DateTime.Now;
             
             _mocker.GetMock<ISchedulerService>().Setup(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
-                It.Is<string>(y => y == taskId)));
+                It.Is<string>(y => y == taskId.ToString()))).ReturnsAsync(new Domain.Entities.Timebox(timeboxId, scheduleId, durationInMinutes, scheduledDateTime, new TaskBase(taskId, "task-name")));
 
             // Act
-            var result = await _sut.ScheduleTask(scheduleId, timeboxId, taskId);
+            var result = await _sut.ScheduleTask(scheduleId.ToString(), timeboxId.ToString(), taskId.ToString());
 
             // Assert
-            result.ShouldBeOfType<OkResult>();
+            result.ShouldBeAssignableTo<OkObjectResult>();
+            (result as OkObjectResult)?.Value.ShouldBeEquivalentTo(new TaskScheduledDto
+            {
+                ScheduleId = scheduleId.ToString(),
+                TimeboxId = timeboxId.ToString(),
+                Timebox = new TimeboxDto
+                {
+                    TimeboxId = timeboxId.ToString(),
+                    TaskId = taskId.ToString(),
+                    DurationInMinutes = durationInMinutes,
+                    FromDateTime = scheduledDateTime
+                },
+                TaskId = taskId.ToString()
+            });
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.AllocateTimebox(
                 It.IsAny<string>(),
@@ -322,9 +350,9 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
                 It.IsAny<DateTime>()), Times.Never);
             
             _mocker.GetMock<ISchedulerService>().Verify(x => x.ScheduleTask(
-                It.Is<string>(y => y == scheduleId),
+                It.Is<string>(y => y == scheduleId.ToString()),
                 It.Is<string>(y => y == timeboxId.ToString()), 
-                It.Is<string>(y => y == taskId)), Times.Once);
+                It.Is<string>(y => y == taskId.ToString())), Times.Once);
         }
         
         [Test]

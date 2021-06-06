@@ -63,7 +63,7 @@ namespace Timebox.Schedule.Api.Controllers
         }
 
         [HttpPut("scheduleTask/{scheduleId}")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(TaskScheduledDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string[]), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Dictionary<string, string>), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
@@ -73,8 +73,10 @@ namespace Timebox.Schedule.Api.Controllers
             {
                 var timebox = await _schedulerService.AllocateTimebox(scheduleId, scheduleTaskDto.DurationInMinutes,
                     scheduleTaskDto.ScheduledDateTime);
-                await _schedulerService.ScheduleTask(scheduleId, timebox.Id.ToString(), scheduleTaskDto.TaskId);
-                return Ok();
+                
+                timebox = await _schedulerService.ScheduleTask(scheduleId, timebox.Id.ToString(), scheduleTaskDto.TaskId);
+                
+                return Ok(TaskScheduledDto.FromEntity(timebox));
             }
             catch (NotFoundException exception)
             {
@@ -95,14 +97,15 @@ namespace Timebox.Schedule.Api.Controllers
         }
         
         [HttpPut("scheduleTask/{scheduleId}/{timeboxId}")]
+        [ProducesResponseType(typeof(TaskScheduledDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string[]), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Dictionary<string, string>), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ScheduleTask([FromRoute]string scheduleId, [FromRoute]string timeboxId, [FromBody]string taskId)
         {
             try
             {
-                await _schedulerService.ScheduleTask(scheduleId, timeboxId, taskId);
-                return Ok();
+                var timebox = await _schedulerService.ScheduleTask(scheduleId, timeboxId, taskId);
+                return Ok(TaskScheduledDto.FromEntity(timebox));
             }
             catch (NotFoundException exception)
             {

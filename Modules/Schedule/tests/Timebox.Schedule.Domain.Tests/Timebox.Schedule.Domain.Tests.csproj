@@ -19,8 +19,4 @@
     <ProjectReference Include="..\..\src\Timebox.Schedule.Domain\Timebox.Schedule.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Entities" />
-  </ItemGroup>
-
 </Project>

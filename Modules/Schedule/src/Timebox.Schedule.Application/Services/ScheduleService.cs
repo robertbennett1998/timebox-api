@@ -8,7 +8,7 @@ namespace Timebox.Schedule.Application.Services
 {
     public class ScheduleService : IScheduleService
     {
-        public Task<Domain.Entities.Schedule> CreateSchedule(DateTime dateTime)
+        public async Task<Domain.Entities.Schedule> CreateSchedule(DateTime dateTime)
         {
             throw new NotImplementedException();
         }

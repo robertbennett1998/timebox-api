@@ -11,6 +11,7 @@ namespace Timebox.Schedule.Api
         public static IServiceCollection AddScheduleModule(this IServiceCollection services)
         {
             services.AddSingleton<IScheduleService, ScheduleService>();
+            services.AddSingleton<ISchedulerService, SchedulerService>();
 
             services.AddControllers()
             .AddApplicationPart(Assembly.GetExecutingAssembly())
