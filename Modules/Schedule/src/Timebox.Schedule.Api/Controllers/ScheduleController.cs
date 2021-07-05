@@ -62,7 +62,7 @@ namespace Timebox.Schedule.Api.Controllers
             }
         }
 
-        [HttpPut("scheduleTask/{scheduleId}")]
+        [HttpPatch("scheduleTask/{scheduleId}")]
         [ProducesResponseType(typeof(TaskScheduledDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string[]), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Dictionary<string, string>), (int)HttpStatusCode.BadRequest)]

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Timebox.Schedule.Api;
+using Timebox.Task.Api;
 
 namespace Timebox.Api
 {
@@ -35,6 +36,7 @@ namespace Timebox.Api
             
             // Modules
             services.AddScheduleModule();
+            services.AddTaskModule();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\Timebox.Schedule.Domain\Timebox.Schedule.Domain.csproj" />
+    <ProjectReference Include="..\Timebox.Task.Domain\Timebox.Task.Domain.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

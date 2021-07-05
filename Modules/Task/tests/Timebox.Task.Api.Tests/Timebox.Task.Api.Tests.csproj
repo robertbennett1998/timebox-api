@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Moq.AutoMock" Version="2.3.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Shouldly" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Timebox.Task.Api\Timebox.Task.Api.csproj" />
+    <ProjectReference Include="..\..\src\Timebox.Task.Application\Timebox.Task.Application.csproj" />
+    <ProjectReference Include="..\..\src\Timebox.Task.Application.Interfaces\Timebox.Task.Application.Interfaces.csproj" />
+    <ProjectReference Include="..\..\src\Timebox.Task.Infrastructure\Timebox.Task.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

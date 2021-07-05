@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\Timebox.Schedule.Application.Interfaces\Timebox.Schedule.Application.Interfaces.csproj" />
@@ -7,6 +7,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9.0</LangVersion>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
 </Project>

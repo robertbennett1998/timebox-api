@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Modules\Schedule\src\Timebox.Schedule.Api\Timebox.Schedule.Api.csproj" />
+      <ProjectReference Include="..\..\Modules\Task\src\Timebox.Task.Api\Timebox.Task.Api.csproj" />
     </ItemGroup>
 
 </Project>
