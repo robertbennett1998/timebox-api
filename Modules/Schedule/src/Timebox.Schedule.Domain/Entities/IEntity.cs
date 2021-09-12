@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Timebox.Schedule.Application.Interfaces.Models
+namespace Timebox.Schedule.Domain.Entities
 {
     public interface IEntity
     {

@@ -13,7 +13,7 @@ namespace Timebox.Schedule.Api.DTOs
         public Guid Id { get; }
         public DateTime Date { get; }
 
-        public static ScheduleCreatedDto FromEntity(Domain.Entities.Schedule scheduleEntity)
+        public static ScheduleCreatedDto FromEntity(Domain.Entities.ISchedule scheduleEntity)
         {
             return new ScheduleCreatedDto(scheduleEntity.Id, scheduleEntity.Date);
         }

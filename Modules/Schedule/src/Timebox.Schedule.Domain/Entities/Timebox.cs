@@ -5,7 +5,7 @@ namespace Timebox.Schedule.Domain.Entities
 {
     public class Timebox : ITimebox
     {
-        public Timebox(Guid scheduleId, int durationInMinutes, DateTime fromDateTime, TaskBase task=null)
+        public Timebox(Guid scheduleId, int durationInMinutes, DateTime fromDateTime, ITaskBase task=null)
         {
             Id = Guid.NewGuid();
             ScheduleId = scheduleId;
@@ -14,7 +14,7 @@ namespace Timebox.Schedule.Domain.Entities
             Task = task;
         }
         
-        public Timebox(Guid id, Guid scheduleId, int durationInMinutes, DateTime fromDateTime, TaskBase task=null)
+        public Timebox(Guid id, Guid scheduleId, int durationInMinutes, DateTime fromDateTime, ITaskBase task=null)
         {
             Id = id;
             ScheduleId = scheduleId;
@@ -26,7 +26,7 @@ namespace Timebox.Schedule.Domain.Entities
         public Guid Id { get; private set; }
         public Guid ScheduleId { get; private set; }
         public int DurationInMinutes { get; private set; }
-        public TaskBase Task { get; private set; }
+        public ITaskBase Task { get; private set; }
         public DateTime FromDateTime { get; private set; }
     }
 }

@@ -6,11 +6,11 @@ using Timebox.Schedule.Infrastructure.Documents;
 
 namespace Timebox.Schedule.Infrastructure
 {
-    public static class Extensions
+    public static class ModuleExtensions
     {
         public static IServiceCollection ConfigureScheduleModuleInfrastructure(this IServiceCollection services)
         {
-            services.AddConvey().AddMongo().AddMongoRepository<ScheduleDocument, Guid>("schedules");
+            services.AddConvey().AddMongo("mongo-timebox-schedule").AddMongoRepository<ScheduleDocument, Guid>("schedules");
             return services;
         }
     }

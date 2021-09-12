@@ -2,9 +2,8 @@
 
 namespace Timebox.Schedule.Domain.Entities
 {
-    public interface ITaskBase
+    public interface ITaskBase : IEntity
     {
-        Guid Id { get; }
         string Name { get; }
     }
 }

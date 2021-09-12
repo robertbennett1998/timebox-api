@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -28,12 +29,27 @@ namespace Timebox.Schedule.Api.Controllers
         {
             try
             {
-                Domain.Entities.Schedule entity = await _scheduleService.CreateSchedule(createScheduleDto.Date);
+                Domain.Entities.ISchedule entity = await _scheduleService.CreateSchedule(createScheduleDto.Name, createScheduleDto.Date);
                 return Created(entity.Id.ToString(), ScheduleCreatedDto.FromEntity(entity));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet("getSchedules")]
+        [ProducesResponseType(typeof(ScheduleDto[]), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetSchedules()
+        {
+            try
+            {
+                var schedules = await _scheduleService.GetSchedules();
+                return Ok(schedules.Select(ScheduleDto.FromEntity));
+            }
+            catch (Exception e)
+            {
+                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -56,7 +72,7 @@ namespace Timebox.Schedule.Api.Controllers
             {
                 return BadRequest(exception.InvalidParameters);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
@@ -67,7 +83,7 @@ namespace Timebox.Schedule.Api.Controllers
         [ProducesResponseType(typeof(string[]), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Dictionary<string, string>), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
-        public async Task<IActionResult> ScheduleTask([FromRoute]string scheduleId, ScheduleTaskDto scheduleTaskDto)
+        public async Task<IActionResult> ScheduleTask([FromRoute]string scheduleId, [FromBody]ScheduleTaskDto scheduleTaskDto)
         {
             try
             {

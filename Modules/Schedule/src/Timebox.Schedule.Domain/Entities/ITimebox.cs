@@ -3,12 +3,11 @@ using System.Collections.Generic;
 
 namespace Timebox.Schedule.Domain.Entities
 {
-    public interface ITimebox
+    public interface ITimebox : IEntity
     {
-        Guid Id { get; }
         Guid ScheduleId { get; }
         int DurationInMinutes { get; }
         DateTime FromDateTime { get; }
-        TaskBase Task { get; }
+        ITaskBase Task { get; }
     }
 }

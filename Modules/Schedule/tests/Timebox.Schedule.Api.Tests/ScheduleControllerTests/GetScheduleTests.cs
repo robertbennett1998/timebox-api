@@ -8,6 +8,7 @@ using Moq.AutoMock;
 using NUnit.Framework;
 using Shouldly;
 using Timebox.Schedule.Api.Controllers;
+using Timebox.Schedule.Api.DTOs;
 using Timebox.Schedule.Application.Exceptions;
 using Timebox.Schedule.Application.Interfaces.Services;
 
@@ -32,15 +33,22 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
             // Arrange
             const string scheduleId = "schedule-id";
             var expectedId = Guid.NewGuid();
+            var expectedName = "name";
+            var expectedDate = DateTime.Today;
+            
             _mocker.GetMock<IScheduleService>().Setup(scheduleService => 
-                scheduleService.GetSchedule(It.Is<string>(id => id == scheduleId))).ReturnsAsync(new Domain.Entities.Schedule(expectedId, DateTime.Now));
+                scheduleService.GetSchedule(It.Is<string>(id => id == scheduleId))).ReturnsAsync(new Domain.Entities.Schedule(expectedId, expectedName, expectedDate));
 
+            var expectedResultValue = new ScheduleDto(expectedId, expectedName, expectedDate);
+            
             // Act
             var result = await _sut.GetSchedule(scheduleId);
 
             // Assert
-            result.ShouldBeOfType<OkObjectResult>();
+            var okObjectResult = result.ShouldBeOfType<OkObjectResult>();
+            okObjectResult.Value.ShouldBeOfType<ScheduleDto>().ShouldBeEquivalentTo(expectedResultValue);
         }
+        
         [Test]
         public async Task GetSchedule_InvalidGuid_ReturnsBadRequest()
         {

@@ -30,14 +30,15 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         {
             // Arrange
             Guid expectedGuid = Guid.NewGuid();
+            string expectedName = "schedule-name";
             DateTime expectedDate = DateTime.Now;
-            var expectedResult = new Domain.Entities.Schedule(expectedGuid, expectedDate);
+            var expectedResult = new Domain.Entities.Schedule(expectedGuid, expectedName, expectedDate);
             _mocker.GetMock<IScheduleService>()
-                    .Setup(x => x.CreateSchedule(It.Is<DateTime>(y => y == expectedDate)))
+                    .Setup(x => x.CreateSchedule(It.Is<string>(y => y == expectedName), It.Is<DateTime>(y => y == expectedDate)))
                     .ReturnsAsync(expectedResult);
             
             // Act
-            var result = await _sut.CreateSchedule(new CreateScheduleDto(expectedDate));
+            var result = await _sut.CreateSchedule(new CreateScheduleDto(expectedName, expectedDate));
 
             // Assert
             result.ShouldBeAssignableTo<CreatedResult>();
@@ -53,14 +54,15 @@ namespace Timebox.Schedule.Api.Tests.ScheduleControllerTests
         {
             // Arrange
             Guid expectedGuid = Guid.NewGuid();
+            string expectedName = "schedule-name";
             DateTime expectedDate = DateTime.Now;
-            var expectedResult = new Domain.Entities.Schedule(expectedGuid, expectedDate);
+            var expectedResult = new Domain.Entities.Schedule(expectedGuid, expectedName, expectedDate);
             _mocker.GetMock<IScheduleService>()
-                .Setup(x => x.CreateSchedule(It.Is<DateTime>(y => y == expectedDate)))
+                .Setup(x => x.CreateSchedule(It.Is<string>(y => y == expectedName), It.Is<DateTime>(y => y == expectedDate)))
                 .ThrowsAsync(new Exception());
             
             // Act
-            var result = await _sut.CreateSchedule(new CreateScheduleDto(expectedDate));
+            var result = await _sut.CreateSchedule(new CreateScheduleDto(expectedName, expectedDate));
 
             // Assert
             result.ShouldBeAssignableTo<StatusCodeResult>();

@@ -18,6 +18,8 @@ namespace Timebox.Api
 {
     public class Startup
     {
+        private readonly string CorsAllowedOrigins = "_allowedOrigins";
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,6 +30,18 @@ namespace Timebox.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: CorsAllowedOrigins,
+                    builder =>
+                    {
+                        builder.WithOrigins("https://localhost:4200", "http://localhost:4200")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -41,7 +55,9 @@ namespace Timebox.Api
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
+        {            
+            app.UseCors(CorsAllowedOrigins);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -49,18 +65,15 @@ namespace Timebox.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Timebox v1"));
             }
 
-            app.UseHttpsRedirection();
-
-
+            // app.UseHttpsRedirection();
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            
+
             // Modules
             app.UseScheduleModule();
         }

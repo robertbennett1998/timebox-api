@@ -5,6 +5,12 @@
     <ProjectReference Include="..\Timebox.Schedule.Domain\Timebox.Schedule.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Convey" Version="0.5.446" />
+    <PackageReference Include="Convey.Persistence.MongoDB" Version="0.5.446" />
+    <PackageReference Include="MongoDB.Driver" Version="2.13.0-beta1" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9.0</LangVersion>

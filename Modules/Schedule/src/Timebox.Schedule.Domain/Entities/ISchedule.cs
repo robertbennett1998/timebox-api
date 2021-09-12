@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Timebox.Schedule.Domain.Entities
 {
-    public interface ISchedule
+    public interface ISchedule : IEntity
     {
-        Guid Id { get; }
+        public string Name { get; }
         public DateTime Date { get; }
-        IEnumerable<Timebox> Timeboxes { get; }
+        IEnumerable<ITimebox> Timeboxes { get; }
     }
 }
