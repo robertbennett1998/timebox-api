@@ -18,7 +18,6 @@ namespace Timebox.Task.Api.Tests.Controllers.TaskControllerTests
     [TestFixture]
     public class CreateTaskTests
     {
-
         private AutoMocker _mocker;
         private TaskController _sut;
         

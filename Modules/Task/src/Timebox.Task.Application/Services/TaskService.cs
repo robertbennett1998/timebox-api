@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Timebox.Task.Application.Interfaces.Services;
 
 namespace Timebox.Task.Application.Services
@@ -10,14 +11,19 @@ namespace Timebox.Task.Application.Services
             throw new System.NotImplementedException();
         }
 
-        public System.Threading.Tasks.Task EditTask(string taskId, string name, string description)
+        public Task<Domain.Entities.Task> EditTask(Guid taskId, string name, string description)
         {
             throw new System.NotImplementedException();
         }
 
-        public System.Threading.Tasks.Task DeleteTask(string taskId)
+        public System.Threading.Tasks.Task DeleteTask(Guid taskId)
         {
             throw new System.NotImplementedException();
+        }
+
+        public Task<Domain.Entities.Task> GetTask(Guid guid)
+        {
+            throw new NotImplementedException();
         }
     }
 }
